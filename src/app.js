@@ -1,13 +1,13 @@
 const express = require('express')
-const app = express()
-
 const cors = require('cors')
 const morgan = require('morgan')
+const sequelize = require('./helpers/sequelize')
 
 const {
   PORT
-  // ENVIRONMENT
 } = process.env
+
+const app = express()
 
 app.use(express.urlencoded({
   extended: true
@@ -15,15 +15,10 @@ app.use(express.urlencoded({
 app.use(cors())
 app.use(morgan('dev'))
 
-app.use(express.static('uploads'))
-app.use(require('./routes'))
-
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to the Shopedia API'
-  })
-})
+app.use('/', require('./routes'))
+app.use('/uploads', express.static('uploads'))
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
+  console.log(`App Listen PORT:${PORT}...`)
+  sequelize.sync()
 })
