@@ -1,9 +1,14 @@
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 const {
   responseHandler
 } = require('../helpers/responseHandler')
 const Users = require('../models/users')
+
+const {
+  SECRET_KEY
+} = process.env
 
 exports.register = async (req, res) => {
   try {
@@ -79,10 +84,20 @@ exports.login = async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (!isPasswordValid) {
-      return responseHandler(res, 400, 'Invalid email or password')
+      return responseHandler(res, 400, 'Invalid password')
     }
 
-    return responseHandler(res, 200, 'User logged in')
+    const {
+      id
+    } = user.dataValues
+
+    const token = jwt.sign({
+      id
+    }, SECRET_KEY)
+
+    return responseHandler(res, 200, 'You are logged in', {
+      token
+    })
   } catch (err) {
     console.error(err)
 
