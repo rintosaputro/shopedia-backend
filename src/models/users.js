@@ -42,6 +42,19 @@ const Users = sequelize.define('users', {
         msg: 'Password can not be empty'
       }
     }
+  },
+  username: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    defaultValue: null,
+    unique: {
+      msg: 'Username already used'
+    }
+  },
+  confirmed: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 })
 
