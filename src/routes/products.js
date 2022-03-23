@@ -2,6 +2,7 @@ const products = require('express').Router()
 const productsController = require('../controllers/products')
 const productImageController = require('../controllers/productImage')
 const productReviewController = require('../controllers/productReview')
+const uploadImage = require('../helpers/upload')
 
 products.get('/', productsController.getAllProducts)
 products.post('/', productsController.createProduct)
@@ -10,9 +11,9 @@ products.patch('/:id', productsController.updateProduct)
 
 // Product image
 products.get('/image', productsController.getProductsWithImages)
-products.post('/image', productImageController.createImage)
+products.post('/image', uploadImage('image'), productImageController.createImage)
 products.delete('/image/:id', productImageController.deleteImage)
-products.patch('/image/:id', productImageController.updateImage)
+products.patch('/image/:id', uploadImage('image'), productImageController.updateImage)
 
 // product review
 products.get('/review', productsController.getProductWithReview)
