@@ -59,7 +59,14 @@ const Users = sequelize.define('users', {
   roleId: {
     type: Sequelize.INTEGER,
     allowNull: false,
-    defaultValue: 2
+    validate: {
+      notEmpty: {
+        msg: 'You must select a role'
+      },
+      notNull: {
+        msg: 'You must select a role'
+      }
+    }
   }
 })
 
