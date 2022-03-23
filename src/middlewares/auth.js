@@ -52,8 +52,8 @@ const verifyToken = async (req, res) => {
 
     return decode
   } catch (error) {
-    console.error(error)
-    return responseHandler(res, 500, 'Internal server error')
+    console.log(error)
+    return responseHandler(res, 500, 'Error occured while verifying user')
   }
 }
 
@@ -61,7 +61,7 @@ exports.verifyUser = async (req, res, next) => {
   try {
     const user = await verifyToken(req, res)
 
-    if (user) {
+    if (user.id) {
       req.user = {
         id: user.id
       }
