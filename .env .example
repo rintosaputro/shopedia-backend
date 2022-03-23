@@ -1,3 +1,12 @@
-PORT=
+# GENERAL
+ENVIRONMENT=development
+PORT=3000
+HOST=http://localhost:3000
+SECRET_KEY=deVelopMent
 
-
+# DATABASE
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=db_shopedia
+DB_DIALECT=mysql
