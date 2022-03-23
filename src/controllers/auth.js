@@ -4,8 +4,11 @@ const validator = require('validator')
 const {
   responseHandler
 } = require('../helpers/responseHandler')
+
 const Users = require('../models/users')
 const OtpCodes = require('../models/otpCodes')
+const Roles = require('../models/roles')
+
 const {
   sendMail
 } = require('../helpers/mail')
@@ -18,11 +21,24 @@ exports.register = async (req, res) => {
   try {
     const {
       email,
-      password
+      password,
+      roleId
     } = req.body
 
     if (!email || !password) {
       return responseHandler(res, 400, 'Email and password are required')
+    }
+
+    const role = await Roles.findByPk(roleId)
+
+    if (!role) {
+      return responseHandler(res, 400, 'Role not found')
+    }
+
+    const roleName = role.dataValues.name
+
+    if (roleName.includes('admin')) {
+      return responseHandler(res, 400, 'You are not allowed to register as admin')
     }
 
     const passwordRules = {
@@ -45,7 +61,8 @@ exports.register = async (req, res) => {
 
     const user = await Users.create({
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      roleId
     })
 
     console.log(user)
