@@ -55,6 +55,11 @@ const Users = sequelize.define('users', {
     type: Sequelize.BOOLEAN,
     allowNull: false,
     defaultValue: false
+  },
+  roleId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 2
   }
 })
 
