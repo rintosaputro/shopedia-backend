@@ -67,7 +67,23 @@ const Users = sequelize.define('users', {
         msg: 'You must select a role'
       }
     }
+  },
+  storeId: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    defaultValue: null,
+    validate: {
+      isInt: {
+        msg: 'Store ID must be an integer'
+      }
+    }
   }
+})
+
+const Roles = require('./roles')
+
+Users.belongsTo(Roles, {
+  foreignKey: 'roleId'
 })
 
 module.exports = Users
