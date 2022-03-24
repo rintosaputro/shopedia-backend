@@ -81,9 +81,12 @@ const Users = sequelize.define('users', {
 })
 
 const Roles = require('./roles')
+const Stores = require('./stores')
 
 Users.belongsTo(Roles, {
   foreignKey: 'roleId'
 })
+
+Users.hasOne(Stores)
 
 module.exports = Users
