@@ -10,7 +10,7 @@ const Categories = require('../models/categories')
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const { search = '', sort = 'ASC', orderBy = 'id', minPrice = 0, maxPrice = 1000000000, brandId = '', categoryId = '' } = req.query
+    const { search = '', sort = 'ASC', orderBy = 'id', minPrice = 0, maxPrice = 1000000000, brandId = '', categoryId = '', condition = '' } = req.query
     let { page, limit } = req.query
     if (parseInt(minPrice) > parseInt(maxPrice)) {
       return responseHandler(res, 400, 'Bad request. Max price must be greater than min')
@@ -33,6 +33,9 @@ exports.getAllProducts = async (req, res) => {
         },
         categoryId: {
           [Sequelize.Op.like]: `${categoryId}%`
+        },
+        condition: {
+          [Sequelize.Op.like]: `${condition}%`
         }
       },
       order: [
