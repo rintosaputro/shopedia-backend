@@ -3,6 +3,7 @@ const { categoriesSeed } = require('./categories')
 const { orderStatusSeed } = require('./orderStatus')
 const { paymentMethodSeed } = require('./paymentMethods')
 const { rolesSeed } = require('./roles')
+const { shippingMethodSeed } = require('./shippingMethods')
 
 module.exports = {
   up: () => {
@@ -11,5 +12,6 @@ module.exports = {
     orderStatusSeed()
     brandsSeed()
     paymentMethodSeed()
+    shippingMethodSeed()
   }
 }

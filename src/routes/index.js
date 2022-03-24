@@ -9,5 +9,6 @@ routes.use('/categories', require('./categories'))
 routes.use('/order-status', require('./orderStatus'))
 routes.use('/brands', require('./brands'))
 routes.use('/payment-methods', require('./paymentMethod'))
+routes.use('/shipping-methods', require('./shippingMethod'))
 
 module.exports = routes
