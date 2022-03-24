@@ -2,16 +2,35 @@ const { responseHandler } = require('../helpers/responseHandler')
 const Products = require('../models/products')
 const ProductImage = require('../models/productImage')
 const ProductReview = require('../models/productReview')
+const Sequelize = require('sequelize')
+const { pageInfo } = require('../helpers/pageInfo')
+const { dinamisUrl } = require('../helpers/dinamisUrl')
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const results = await Products.findAll()
-    if (results) {
-      return responseHandler(res, 200, 'List all products', results)
+    const { search = '' } = req.query
+    let { page, limit } = req.query
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 5
+    const offset = (page - 1) * limit
+    const { count, rows } = await Products.findAndCountAll({
+      where: {
+        name: {
+          [Sequelize.Op.like]: `${search}%`
+        }
+      },
+      offset: offset,
+      limit: limit
+    })
+    const url = dinamisUrl(req.query)
+    const pInfo = pageInfo(count, limit, page, url, 'products')
+    if (rows.length > 0) {
+      return responseHandler(res, 200, 'List all products', rows, pInfo)
     } else {
       return responseHandler(res, 404, 'Data not found')
     }
   } catch (err) {
+    console.log(err)
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
     if (error) {
       return responseHandler(res, 500, 'Unexpected error', null, error)
