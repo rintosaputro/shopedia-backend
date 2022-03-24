@@ -32,7 +32,10 @@ httpMethods.forEach((el) => {
   })
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`App Listen PORT:${PORT}...`)
-  sequelize.sync()
+  await sequelize.sync()
+
+  // add default static data using seeders
+  require('./seeders').up()
 })
