@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../helpers/sequelize')
-const Users = require('./users')
+// const Users = require('./users')
 
 const Stores = sequelize.define('store', {
   name: {
@@ -24,11 +24,11 @@ const Stores = sequelize.define('store', {
       notEmpty: {
         msg: 'User Id must be fill'
       }
-    },
-    references: {
-      model: Users,
-      key: 'id'
     }
+    // references: {
+    //   model: Users,
+    //   key: 'id'
+    // }
   }
 })
 
