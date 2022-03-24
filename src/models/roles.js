@@ -5,7 +5,9 @@ const Roles = sequelize.define('roles', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
+    unique: {
+      msg: 'Role already used'
+    },
     validate: {
       notEmpty: {
         msg: 'Role name is required'
