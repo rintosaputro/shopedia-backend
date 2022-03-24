@@ -3,12 +3,12 @@ const {
   addRole
 } = require('../controllers/roles')
 const {
-  verifyUser
+  verifyAdmin
 } = require('../middlewares/auth')
 
 const roles = require('express').Router()
 
-roles.get('/', verifyUser, listRoles)
-roles.post('/', addRole)
+roles.get('/', listRoles)
+roles.post('/', verifyAdmin, addRole)
 
 module.exports = roles
