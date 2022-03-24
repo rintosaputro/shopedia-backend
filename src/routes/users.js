@@ -1,16 +1,17 @@
 const user = require('express').Router()
 
-const {
-  getProfile,
-  updateProfile
-} = require('../controllers/users')
+const favoriteProduct = require('../controllers/favoriteProduct')
+const userController = require('../controllers/users')
 const uploadImage = require('../helpers/upload')
-const {
-  verifyUser
-} = require('../middlewares/auth')
+const auth = require('../middlewares/auth')
 
-user.get('/profile', verifyUser, getProfile)
+// User profile
+user.get('/profile', auth.verifyUser, userController.getProfile)
+user.patch('/profile', auth.verifyUser, uploadImage('image'), userController.updateProfile)
 
-user.patch('/profile', verifyUser, uploadImage('image'), updateProfile)
+// User favorite product
+user.get('/favorite-product', auth.verifyUser, favoriteProduct.getFavoriteProducts)
+user.post('/favorite-product', auth.verifyUser, favoriteProduct.addFavoriteProduct)
+user.delete('/favorite-product/:id', auth.verifyUser, favoriteProduct.deleteFavoriteProduct)
 
 module.exports = user

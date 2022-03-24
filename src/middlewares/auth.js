@@ -82,7 +82,7 @@ exports.verifyAdmin = async (req, res, next) => {
         role
       } = user
 
-      if (role === 'admin') {
+      if (role.includes('admin')) {
         next()
       } else {
         return responseHandler(res, 403, 'Forbidden')
@@ -103,7 +103,10 @@ exports.verifySeller = async (req, res, next) => {
         role
       } = user
 
-      if (role === 'seller') {
+      if (role.includes('seller')) {
+        req.user = {
+          id: user.id
+        }
         next()
       } else {
         return responseHandler(res, 403, 'Forbidden')
