@@ -95,7 +95,7 @@ exports.getProfile = async (req, res) => {
     } = req.user
 
     const user = await Users.findByPk(id, {
-      attributes: ['id', 'name', 'email', 'username', 'confirmed', 'description', 'image', 'roleId', 'storeId'],
+      attributes: ['id', 'name', 'email', 'gender', 'username', 'confirmed', 'description', 'image', 'roleId', 'storeId'],
       include: [{
         model: Roles
       }]
