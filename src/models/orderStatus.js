@@ -1,19 +1,19 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../helpers/sequelize')
 
-const Roles = sequelize.define('roles', {
+const OrderStatus = sequelize.define('orderStatuses', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: {
-      msg: 'Role already used'
+      msg: 'Order Status already used'
     },
     validate: {
       notEmpty: {
-        msg: 'Role name is required'
+        msg: 'Order Status can not be empty'
       }
     }
   }
 })
 
-module.exports = Roles
+module.exports = OrderStatus

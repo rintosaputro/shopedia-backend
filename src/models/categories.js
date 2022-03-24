@@ -1,19 +1,19 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../helpers/sequelize')
 
-const Roles = sequelize.define('roles', {
+const Categories = sequelize.define('categories', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: {
-      msg: 'Role already used'
+      msg: 'Category already used'
     },
     validate: {
       notEmpty: {
-        msg: 'Role name is required'
+        msg: 'Category can not be empty'
       }
     }
   }
 })
 
-module.exports = Roles
+module.exports = Categories
