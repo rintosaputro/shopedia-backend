@@ -2,6 +2,8 @@ const Sequelize = require('sequelize')
 const sequelize = require('../helpers/sequelize')
 const ProductImage = require('./productImage')
 const ProductReview = require('./productReview')
+const Brands = require('./brands')
+const Categories = require('./categories')
 
 const Products = sequelize.define('products', {
   name: {
@@ -36,10 +38,35 @@ const Products = sequelize.define('products', {
       },
       min: 0
     }
+  },
+  condition: {
+    type: Sequelize.ENUM(['New', 'Second'])
+  },
+  brandId: {
+    type: Sequelize.INTEGER,
+    validate: {
+      notEmpty: {
+        msg: 'Brand id must be fill'
+      }
+    }
+  },
+  categoryId: {
+    type: Sequelize.INTEGER,
+    validate: {
+      notEmpty: {
+        msg: 'Category Id must be fill'
+      }
+    }
   }
 })
 
 Products.hasMany(ProductImage)
 Products.hasMany(ProductReview)
+Products.belongsTo(Brands, {
+  foreignKey: 'brandId'
+})
+Products.belongsTo(Categories, {
+  foreignKey: 'categoryId'
+})
 
 module.exports = Products
