@@ -8,6 +8,7 @@ const auth = require('../middlewares/auth')
 // User profile
 user.get('/profile', auth.verifyUser, userController.getProfile)
 user.patch('/profile', auth.verifyUser, uploadImage('image'), userController.updateProfile)
+user.patch('/change-password', auth.verifyUser, userController.changePassword)
 
 // User favorite product
 user.get('/favorite-product', auth.verifyUser, favoriteProduct.getFavoriteProducts)

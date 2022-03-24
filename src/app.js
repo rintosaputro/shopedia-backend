@@ -20,7 +20,7 @@ app.use(morgan('dev'))
 app.use('/', require('./routes'))
 app.use('/uploads', express.static('uploads'))
 
-const httpMethods = ['get', 'post', 'put', 'delete']
+const httpMethods = ['get', 'post', 'put', 'patch', 'delete']
 
 httpMethods.forEach((el) => {
   app[el]('*', (req, res) => {

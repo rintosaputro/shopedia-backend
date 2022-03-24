@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const {
   cloudPathToFileName
 } = require('../helpers/converter')
@@ -108,5 +109,57 @@ exports.getProfile = async (req, res) => {
     return responseHandler(res, 200, 'User found', user)
   } catch (error) {
     return responseHandler(res, 500, 'Unexpected Error while getting profile')
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { id } = req.user
+
+    const user = await Users.findByPk(id)
+
+    if (!user) {
+      return responseHandler(res, 404, 'User not found')
+    }
+
+    const { oldPassword, newPassword, confirmPassword } = req.body
+
+    const data = {
+      oldPassword,
+      newPassword,
+      confirmPassword
+    }
+
+    for (const key in data) {
+      if (!data[key]) {
+        return responseHandler(res, 400, 'Please fill all the fields')
+      }
+    }
+
+    if (newPassword !== confirmPassword) {
+      return responseHandler(res, 400, 'New password and confirm password does not match')
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password)
+
+    if (!isMatch) {
+      return responseHandler(res, 400, 'Old password is incorrect')
+    }
+
+    if (oldPassword === newPassword) {
+      return responseHandler(res, 400, 'Old password and new password must be different')
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+    user.password = hashedPassword
+    await user.save()
+
+    return responseHandler(res, 200, 'Password changed successfully')
+  } catch (err) {
+    console.error(err)
+
+    return responseHandler(res, 500, 'Unexpected Error while changing password')
   }
 }
