@@ -8,5 +8,6 @@ routes.use('/stores', require('./stores'))
 routes.use('/categories', require('./categories'))
 routes.use('/order-status', require('./orderStatus'))
 routes.use('/brands', require('./brands'))
+routes.use('/payment-methods', require('./paymentMethod'))
 
 module.exports = routes
