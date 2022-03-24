@@ -1,6 +1,7 @@
 const { brandsSeed } = require('./brands')
 const { categoriesSeed } = require('./categories')
 const { orderStatusSeed } = require('./orderStatus')
+const { paymentMethodSeed } = require('./paymentMethods')
 const { rolesSeed } = require('./roles')
 
 module.exports = {
@@ -9,5 +10,6 @@ module.exports = {
     categoriesSeed()
     orderStatusSeed()
     brandsSeed()
+    paymentMethodSeed()
   }
 }
