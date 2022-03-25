@@ -7,15 +7,15 @@ const auth = require('../middlewares/auth')
 
 products.get('/', productsController.getAllProducts)
 products.get('/:id', productsController.getProductDetail)
-products.post('/', auth.verifySeller, productsController.createProduct)
-products.delete('/:id', auth.verifySeller, productsController.deleteProduct)
-products.patch('/:id', auth.verifySeller, productsController.updateProduct)
+products.post('/', auth.verifyUserConfirmed, auth.verifySeller, productsController.createProduct)
+products.delete('/:id', auth.verifyUserConfirmed, auth.verifySeller, productsController.deleteProduct)
+products.patch('/:id', auth.verifyUserConfirmed, auth.verifySeller, productsController.updateProduct)
 
 // Product image
 products.get('/image', productsController.getProductsWithImages)
-products.post('/image', auth.verifySeller, uploadImage('image'), productImageController.createImage)
-products.delete('/image/:id', auth.verifySeller, productImageController.deleteImage)
-products.patch('/image/:id', auth.verifySeller, uploadImage('image'), productImageController.updateImage)
+products.post('/image', auth.verifyUserConfirmed, auth.verifySeller, uploadImage('image'), productImageController.createImage)
+products.delete('/image/:id', auth.verifyUserConfirmed, auth.verifySeller, productImageController.deleteImage)
+products.patch('/image/:id', auth.verifyUserConfirmed, auth.verifySeller, uploadImage('image'), productImageController.updateImage)
 
 // product review
 products.get('/review', productsController.getProductWithReview)
