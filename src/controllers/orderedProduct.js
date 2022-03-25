@@ -104,12 +104,6 @@ exports.addOrderedProduct = async (req, res) => {
     const { id: userId } = req.user
     data.userId = userId
 
-    const product = await Products.findByPk(productId)
-
-    if (!product) {
-      return responseHandler(res, 400, 'Product not found')
-    }
-
     const transaction = await Transactions.findOne({
       where: {
         id: transactionId,
@@ -121,12 +115,24 @@ exports.addOrderedProduct = async (req, res) => {
       return responseHandler(res, 400, 'Transaction not found')
     }
 
+    const product = await Products.findByPk(productId)
+
+    if (!product) {
+      return responseHandler(res, 400, 'Product not found')
+    }
+
+    if (product.stock < qty) {
+      return responseHandler(res, 400, 'Stock not enough')
+    }
+
     data.total = Number(product.price) * Number(qty)
 
     const orderedProduct = await OrderedProducts.create(data)
 
     transaction.total = Number(transaction.total) + Number(orderedProduct.total)
+    product.stock = Number(product.stock) - Number(orderedProduct.qty)
     await transaction.save()
+    await product.save()
 
     // return responseHandler(res, 200, 'Ordered product added')
     return responseHandler(res, 200, 'Ordered product added', orderedProduct)
