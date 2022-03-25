@@ -87,7 +87,7 @@ Users.belongsTo(Roles, {
   foreignKey: 'roleId'
 })
 
-Users.hasOne(Stores, {
+Users.belongsTo(Stores, {
   foreignKey: 'storeId'
 })
 
