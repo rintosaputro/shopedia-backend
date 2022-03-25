@@ -19,8 +19,16 @@ exports.getAllProducts = async (req, res) => {
     page = parseInt(page) || 1
     limit = parseInt(limit) || 5
     const offset = (page - 1) * limit
+    const include = [
+      {
+        model: ProductImage,
+        attributes: ['image'],
+        limit: 1
+      }
+    ]
     const { count, rows } = await Products.findAndCountAll({
-      include: [ProductImage, ProductReview, Brands, Categories],
+      include: include,
+      attributes: ['id', 'name', 'price'],
       where: {
         name: {
           [Sequelize.Op.like]: `${search}%`
@@ -142,6 +150,7 @@ exports.getProductsWithImages = async (req, res) => {
     const product = await Products.findAll({
       include: ProductImage
     })
+    console.log(product)
     if (!product) {
       return responseHandler(res, 404, 'Data not found')
     }
