@@ -31,7 +31,7 @@ exports.getAllProducts = async (req, res) => {
       attributes: ['id', 'name', 'price'],
       where: {
         name: {
-          [Sequelize.Op.like]: `${search}%`
+          [Sequelize.Op.like]: `%${search}%`
         },
         price: {
           [Sequelize.Op.gt]: minPrice,
@@ -107,13 +107,18 @@ exports.createProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
+    })
     const product = await Products.findByPk(req.params.id)
-    if (product) {
-      product.destroy()
-      return responseHandler(res, 200, 'Deleted Successfully', product)
-    } else {
+    if (!product) {
       return responseHandler(res, 404, 'Data not found')
     }
+    if (user.storeId !== product.storeId) {
+      return responseHandler(res, 401, 'Unauthorized')
+    }
+    product.destroy()
+    return responseHandler(res, 200, 'Deleted Successfully', product)
   } catch (err) {
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
     if (error) {
@@ -126,9 +131,15 @@ exports.deleteProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
+    })
     const product = await Products.findByPk(req.params.id)
     if (!product) {
       return responseHandler(res, 404, 'Data not found')
+    }
+    if (user.storeId !== product.storeId) {
+      return responseHandler(res, 401, 'Unauthorized')
     }
     for (const key in req.body) {
       product[key] = req.body[key]
@@ -186,8 +197,25 @@ exports.getProductWithReview = async (req, res) => {
 
 exports.getProductDetail = async (req, res) => {
   try {
+    const include = [
+      {
+        model: ProductImage,
+        attributes: ['image']
+      },
+      {
+        model: ProductReview,
+        attributes: ['id', 'comment']
+      },
+      {
+        model: Categories,
+        attributes: ['name']
+      }
+    ]
     const product = await Products.findByPk(req.params.id, {
-      include: [ProductImage, ProductReview]
+      include: include,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }
     })
     if (!product) {
       return responseHandler(res, 404, 'Data not found')

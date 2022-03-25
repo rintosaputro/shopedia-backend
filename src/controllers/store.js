@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize')
 const { responseHandler } = require('../helpers/responseHandler')
 const Products = require('../models/products')
 const Stores = require('../models/stores')
@@ -5,7 +6,15 @@ const Users = require('../models/users')
 
 exports.getStore = async (req, res) => {
   try {
-    const store = await Stores.findAll()
+    const { search = '' } = req.query
+    const store = await Stores.findAll({
+      attributes: ['id', 'name'],
+      where: {
+        name: {
+          [Sequelize.Op.like]: `%${search}%`
+        }
+      }
+    })
     if (store.length === 0) {
       return responseHandler(res, 404, 'Data not found')
     }
@@ -99,7 +108,13 @@ exports.getStoreWithUser = async (req, res) => {
     })
     const id = user.storeId
     const store = await Stores.findByPk(id, {
-      include: Products
+      include: {
+        model: Products,
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'storeId']
+        }
+      },
+      attributes: ['id', 'name', 'description']
     })
     if (!store) {
       return responseHandler(res, 404, 'Data not found')
