@@ -9,7 +9,7 @@ transaction.get('/', auth.verifyUser, transactionController.listTransaction)
 transaction.post('/', auth.verifyUserConfirmed, transactionController.createTransaction)
 
 // ordered product
-transaction.get('/ordered-product', auth.verifyUserConfirmed, orderedProductController.listOrderedProduct)
+transaction.get('/ordered-product', auth.verifyUser, orderedProductController.listOrderedProduct)
 transaction.post('/ordered-product', auth.verifyUserConfirmed, orderedProductController.addOrderedProduct)
 
 module.exports = transaction
