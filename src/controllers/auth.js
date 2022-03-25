@@ -221,6 +221,23 @@ exports.resetVerify = async (req, res) => {
       confirmPassword
     } = req.body
 
+    let { isReset } = req.body
+
+    if (req.body.isReset) {
+      isReset = validator.isBoolean(isReset)
+      if (isReset) {
+        if (req.body.isReset === 'true' || req.body.isReset === '1') {
+          isReset = true
+        } else {
+          isReset = false
+        }
+      } else {
+        isReset = false
+      }
+    } else {
+      isReset = false
+    }
+
     const {
       callbackUrl
     } = req.query
@@ -254,16 +271,25 @@ exports.resetVerify = async (req, res) => {
       } = user.dataValues
 
       let error = null
+
+      // console.log(req.body.isReset)
       if (confirmed) {
         error = await sendCode('reset', id, callbackUrl, email)
+        // error = 'reset'
       } else {
-        error = await sendCode('verify', id, callbackUrl, email)
+        if (isReset) {
+          error = await sendCode('reset', id, callbackUrl, email)
+          // error = 'reset'
+        } else {
+          error = await sendCode('verify', id, callbackUrl, email)
+          // error = 'verify'
+        }
       }
 
       if (error) {
         return responseHandler(res, 500, error)
       } else {
-        return responseHandler(res, 200, 'Code sent')
+        return responseHandler(res, 200, 'Code sent, check your mail')
       }
     }
 
@@ -360,17 +386,16 @@ exports.resetVerify = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
-        const result = await Users.update({
-          password: hashedPassword
-        }, {
-          where: {
-            id: userId
-          }
-        })
+        const user = await Users.findByPk(userId)
 
-        if (!result) {
-          return responseHandler(res, 500, 'Failed to reset password')
+        if (!user) {
+          return responseHandler(res, 400, 'Invalid token')
         } else {
+          user.password = hashedPassword
+          if (!user.confirmed) {
+            user.confirmed = true
+          }
+          await user.save()
           await OtpCodes.update({
             expired: true
           }, {
@@ -380,6 +405,19 @@ exports.resetVerify = async (req, res) => {
           })
           return responseHandler(res, 200, 'Password reset')
         }
+
+        // if (!user) {
+        //   return responseHandler(res, 500, 'Failed to reset password')
+        // } else {
+        //   await OtpCodes.update({
+        //     expired: true
+        //   }, {
+        //     where: {
+        //       id: otpId
+        //     }
+        //   })
+        //   return responseHandler(res, 200, 'Password reset')
+        // }
       }
     }
 
