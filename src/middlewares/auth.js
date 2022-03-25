@@ -109,7 +109,7 @@ exports.verifySeller = async (req, res, next) => {
         }
         next()
       } else {
-        return responseHandler(res, 403, 'Forbidden')
+        return responseHandler(res, 403, 'You are not a seller')
       }
     }
   } catch (error) {

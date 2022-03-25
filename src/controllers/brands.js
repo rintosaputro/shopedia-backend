@@ -3,7 +3,11 @@ const Brands = require('../models/brands')
 
 exports.listBrands = async (req, res) => {
   try {
-    const result = await Brands.findAll()
+    const result = await Brands.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }
+    })
     responseHandler(res, 200, 'Brand List', result)
   } catch (error) {
     console.error(error)
