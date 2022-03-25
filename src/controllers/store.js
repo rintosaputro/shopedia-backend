@@ -1,4 +1,5 @@
 const { responseHandler } = require('../helpers/responseHandler')
+const Products = require('../models/products')
 const Stores = require('../models/stores')
 const Users = require('../models/users')
 
@@ -21,11 +22,18 @@ exports.getStore = async (req, res) => {
 
 exports.createStore = async (req, res) => {
   try {
-    const userId = await Users.findByPk(req.body.userId)
-    if (!userId) {
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
+    })
+    if (!user) {
       return responseHandler(res, 404, 'User Id not found')
     }
+    if (user.storeId) {
+      return responseHandler(res, 400, 'One account just for one store')
+    }
     const store = await Stores.create(req.body)
+    user.storeId = store.id
+    await user.save()
     return responseHandler(res, 200, 'Store Created!', store)
   } catch (err) {
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
@@ -39,7 +47,10 @@ exports.createStore = async (req, res) => {
 
 exports.updateStore = async (req, res) => {
   try {
-    const store = await Stores.findByPk(req.params.id)
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
+    })
+    const store = await Stores.findByPk(user.storeId)
     if (!store) {
       return responseHandler(res, 404, 'Data not found')
     }
@@ -60,11 +71,16 @@ exports.updateStore = async (req, res) => {
 
 exports.deleteStore = async (req, res) => {
   try {
-    const store = await Stores.findByPk(req.params.id)
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
+    })
+    const store = await Stores.findByPk(user.storeId)
     if (!store) {
       return responseHandler(res, 404, 'Data not found')
     }
     await store.destroy()
+    user.storeId = null
+    await user.save()
     return responseHandler(res, 200, 'Store Deleted!', store)
   } catch (err) {
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
@@ -78,9 +94,16 @@ exports.deleteStore = async (req, res) => {
 
 exports.getStoreWithUser = async (req, res) => {
   try {
-    const store = await Users.findAll({
-      include: Stores
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
     })
+    const id = user.storeId
+    const store = await Stores.findByPk(id, {
+      include: Products
+    })
+    if (!store) {
+      return responseHandler(res, 404, 'Data not found')
+    }
     return responseHandler(res, 200, 'List Store with user', store)
   } catch (err) {
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
