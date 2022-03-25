@@ -56,7 +56,8 @@ exports.getFavoriteProducts = async (req, res) => {
       id
     } = req.user
 
-    const includes = [{
+    const includes = [
+      {
         model: Products,
         attributes: ['id', 'name', 'price', 'stock']
       },

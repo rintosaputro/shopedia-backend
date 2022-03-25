@@ -117,3 +117,26 @@ exports.verifySeller = async (req, res, next) => {
     return responseHandler(res, 500, 'Error occured while verifying user')
   }
 }
+
+exports.verifyUserConfirmed = async (req, res, next) => {
+  try {
+    const user = await verifyToken(req, res)
+
+    if (user.id) {
+      const { confirmed } = await Users.findByPk(user.id)
+      if (confirmed) {
+        req.user = {
+          id: user.id
+        }
+        next()
+      } else {
+        return responseHandler(res, 403, 'User not confirmed')
+      }
+    } else {
+      return responseHandler(res, 403, 'Forbidden')
+    }
+  } catch (error) {
+    console.error(error)
+    return responseHandler(res, 500, 'Error occured while verifying user')
+  }
+}

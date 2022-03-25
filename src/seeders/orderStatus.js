@@ -3,11 +3,11 @@ const OrderStatus = require('../models/orderStatus')
 exports.orderStatusSeed = async () => {
   try {
     const orderStatus = await OrderStatus.findAll()
-    if (orderStatus.length > 0) {
-      return
-    }
 
-    await OrderStatus.bulkCreate([
+    const orderStatusData = [
+      {
+        name: 'Paid'
+      },
       {
         name: 'Processed'
       },
@@ -20,7 +20,13 @@ exports.orderStatusSeed = async () => {
       {
         name: 'Cancelled'
       }
-    ])
+    ]
+
+    if (orderStatus.length >= orderStatusData.length) {
+      return
+    }
+
+    await OrderStatus.bulkCreate(orderStatusData)
   } catch (err) {
     console.error(err)
   }
