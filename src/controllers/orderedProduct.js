@@ -7,6 +7,7 @@ const OrderStatus = require('../models/orderStatus')
 
 const Sequelize = require('sequelize')
 const validator = require('validator')
+const Users = require('../models/users')
 
 exports.listOrderedProduct = async (req, res) => {
   try {
@@ -104,12 +105,6 @@ exports.addOrderedProduct = async (req, res) => {
     const { id: userId } = req.user
     data.userId = userId
 
-    const product = await Products.findByPk(productId)
-
-    if (!product) {
-      return responseHandler(res, 400, 'Product not found')
-    }
-
     const transaction = await Transactions.findOne({
       where: {
         id: transactionId,
@@ -121,15 +116,149 @@ exports.addOrderedProduct = async (req, res) => {
       return responseHandler(res, 400, 'Transaction not found')
     }
 
+    const product = await Products.findByPk(productId)
+
+    if (!product) {
+      return responseHandler(res, 400, 'Product not found')
+    }
+
+    if (product.stock < qty) {
+      return responseHandler(res, 400, 'Stock not enough')
+    }
+
     data.total = Number(product.price) * Number(qty)
 
-    const orderedProduct = await OrderedProducts.create(data)
+    const isAlreadyOrdered = await OrderedProducts.findOne({
+      where: {
+        productId,
+        transactionId
+      }
+    })
+
+    let orderedProduct
+
+    if (isAlreadyOrdered) {
+      orderedProduct = await OrderedProducts.findByPk(isAlreadyOrdered.id)
+      // console.log(orderedProduct)
+      orderedProduct.qty += Number(qty)
+      orderedProduct.total += data.total
+      await orderedProduct.save()
+    } else {
+      orderedProduct = await OrderedProducts.create(data)
+    }
 
     transaction.total = Number(transaction.total) + Number(orderedProduct.total)
+    product.stock = Number(product.stock) - Number(qty)
+    console.log('naga', product.stock)
     await transaction.save()
+    await product.save()
+
+    const orderDetail = await OrderedProducts.findByPk(orderedProduct.id, {
+      include: [
+        {
+          model: Products,
+          attributes: ['id', 'name', 'price', 'stock']
+        },
+        {
+          model: OrderStatus,
+          attributes: ['id', 'name']
+        }
+      ]
+    })
 
     // return responseHandler(res, 200, 'Ordered product added')
-    return responseHandler(res, 200, 'Ordered product added', orderedProduct)
+    return responseHandler(res, 200, 'Ordered product added', orderDetail)
+  } catch (err) {
+    console.error(err)
+
+    if (err.errors) {
+      const error = err.errors.map(err => ({ field: err.path, message: err.message }))
+      return responseHandler(res, 400, 'Check your input', null, error)
+    } else if (err.name === 'SequelizeForeignKeyConstraintError') {
+      return responseHandler(res, 400, 'You must provide registered input data')
+    } else {
+      return responseHandler(res, 500, 'Error while add ordered product')
+    }
+  }
+}
+
+exports.changeOrderStatus = async (req, res) => {
+  try {
+    const { id: orderedProductId } = req.params
+    const { orderStatusId } = req.body
+    const { id: userId } = req.user
+
+    const orderedProduct = await OrderedProducts.findByPk(orderedProductId, {
+      include: [
+        {
+          model: Products,
+          attributes: ['id', 'name', 'price', 'stock', 'storeId']
+        },
+        {
+          model: OrderStatus,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Transactions,
+          attributes: ['id', 'total']
+        }
+      ],
+      attributes: {
+        exclude: ['productId', 'transactionId']
+      }
+    })
+
+    if (!orderedProduct) {
+      return responseHandler(res, 400, 'Ordered product not found')
+    }
+
+    const orderStatus = await OrderStatus.findByPk(orderStatusId)
+
+    if (!orderStatus) {
+      return responseHandler(res, 400, 'Order status not found')
+    }
+
+    const seller = await Users.findByPk(userId, {
+      attributes: ['id', 'name', 'email', 'storeId']
+    })
+
+    const store = seller.storeId
+    const productStore = orderedProduct.product.storeId
+
+    if (store !== productStore) {
+      return responseHandler(res, 400, 'Just seller of this product can change order status')
+    }
+
+    if (orderedProduct.orderStatusId === Number(orderStatusId)) {
+      return responseHandler(res, 400, 'Order status already same')
+    }
+    // console.log(orderedProduct.product.storeId)
+    // console.log(orderedProduct.orderStatusId)
+
+    orderedProduct.orderStatusId = Number(orderStatusId)
+    await orderedProduct.save()
+
+    const newOrderedProduct = await OrderedProducts.findByPk(orderedProduct.id, {
+      include: [
+        {
+          model: Products,
+          attributes: ['id', 'name', 'price', 'stock', 'storeId']
+        },
+        {
+          model: OrderStatus,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Transactions,
+          attributes: ['id', 'total']
+        }
+      ],
+      attributes: {
+        exclude: ['productId', 'transactionId']
+      }
+    })
+
+    return responseHandler(res, 200, 'Order status changed', newOrderedProduct)
   } catch (err) {
     console.error(err)
 
