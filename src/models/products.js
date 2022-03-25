@@ -4,6 +4,7 @@ const ProductImage = require('./productImage')
 const ProductReview = require('./productReview')
 const Brands = require('./brands')
 const Categories = require('./categories')
+const Stores = require('./stores')
 
 const Products = sequelize.define('products', {
   name: {
@@ -66,9 +67,18 @@ const Products = sequelize.define('products', {
         msg: 'Category Id must be fill'
       }
     }
+  },
+  storeId: {
+    type: Sequelize.INTEGER,
+    validate: {
+      notEmpty: {
+        msg: 'Please make your store first'
+      }
+    }
   }
 })
 
+Stores.hasMany(Products)
 Products.hasMany(ProductImage)
 Products.hasMany(ProductReview)
 Products.belongsTo(Brands, {

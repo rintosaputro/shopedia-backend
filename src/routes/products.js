@@ -3,17 +3,19 @@ const productsController = require('../controllers/products')
 const productImageController = require('../controllers/productImage')
 const productReviewController = require('../controllers/productReview')
 const uploadImage = require('../helpers/upload')
+const auth = require('../middlewares/auth')
 
 products.get('/', productsController.getAllProducts)
-products.post('/', productsController.createProduct)
-products.delete('/:id', productsController.deleteProduct)
-products.patch('/:id', productsController.updateProduct)
+products.get('/:id', productsController.getProductDetail)
+products.post('/', auth.verifyUserConfirmed, auth.verifySeller, productsController.createProduct)
+products.delete('/:id', auth.verifyUserConfirmed, auth.verifySeller, productsController.deleteProduct)
+products.patch('/:id', auth.verifyUserConfirmed, auth.verifySeller, productsController.updateProduct)
 
 // Product image
 products.get('/image', productsController.getProductsWithImages)
-products.post('/image', uploadImage('image'), productImageController.createImage)
-products.delete('/image/:id', productImageController.deleteImage)
-products.patch('/image/:id', uploadImage('image'), productImageController.updateImage)
+products.post('/image', auth.verifyUserConfirmed, auth.verifySeller, uploadImage('image'), productImageController.createImage)
+products.delete('/image/:id', auth.verifyUserConfirmed, auth.verifySeller, productImageController.deleteImage)
+products.patch('/image/:id', auth.verifyUserConfirmed, auth.verifySeller, uploadImage('image'), productImageController.updateImage)
 
 // product review
 products.get('/review', productsController.getProductWithReview)

@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../helpers/sequelize')
+const Stores = require('./stores')
 
 const Users = sequelize.define('users', {
   name: {
@@ -81,12 +82,13 @@ const Users = sequelize.define('users', {
 })
 
 const Roles = require('./roles')
-const Stores = require('./stores')
 
 Users.belongsTo(Roles, {
   foreignKey: 'roleId'
 })
 
-Users.hasOne(Stores)
+Users.belongsTo(Stores, {
+  foreignKey: 'storeId'
+})
 
 module.exports = Users

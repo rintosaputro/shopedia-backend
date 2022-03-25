@@ -7,6 +7,7 @@ const { pageInfo } = require('../helpers/pageInfo')
 const { dinamisUrl } = require('../helpers/dinamisUrl')
 const Brands = require('../models/brands')
 const Categories = require('../models/categories')
+const Users = require('../models/users')
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -64,6 +65,13 @@ exports.getAllProducts = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'storeId']
+    })
+    if (!user.storeId) {
+      return responseHandler(res, 404, 'Please make your store first')
+    }
+    req.body.storeId = user.storeId
     const brand = await Brands.findByPk(req.body.brandId)
     if (!brand) {
       return responseHandler(res, 404, 'Brand Id not found. Please add brand first')
@@ -164,5 +172,19 @@ exports.getProductWithReview = async (req, res) => {
     } else {
       return responseHandler(res, 500, 'Unexpected error')
     }
+  }
+}
+
+exports.getProductDetail = async (req, res) => {
+  try {
+    const product = await Products.findByPk(req.params.id, {
+      include: [ProductImage, ProductReview]
+    })
+    if (!product) {
+      return responseHandler(res, 404, 'Data not found')
+    }
+    return responseHandler(res, 200, 'Detail product', product)
+  } catch (err) {
+    return responseHandler(res, 500, 'Unexpected error', null, err)
   }
 }
