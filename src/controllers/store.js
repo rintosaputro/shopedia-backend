@@ -1,11 +1,23 @@
+const Sequelize = require('sequelize')
+const { dinamisUrl } = require('../helpers/dinamisUrl')
+const { pageInfo } = require('../helpers/pageInfo')
 const { responseHandler } = require('../helpers/responseHandler')
+const ProductImage = require('../models/productImage')
 const Products = require('../models/products')
 const Stores = require('../models/stores')
 const Users = require('../models/users')
 
 exports.getStore = async (req, res) => {
   try {
-    const store = await Stores.findAll()
+    const { search = '' } = req.query
+    const store = await Stores.findAll({
+      attributes: ['id', 'name'],
+      where: {
+        name: {
+          [Sequelize.Op.like]: `%${search}%`
+        }
+      }
+    })
     if (store.length === 0) {
       return responseHandler(res, 404, 'Data not found')
     }
@@ -97,14 +109,32 @@ exports.getStoreWithUser = async (req, res) => {
     const user = await Users.findByPk(req.user.id, {
       attributes: ['id', 'storeId']
     })
-    const id = user.storeId
-    const store = await Stores.findByPk(id, {
-      include: Products
+    let { page, limit } = req.query
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 3
+    const offset = (page - 1) * limit
+    const { count, rows } = await Products.findAndCountAll({
+      where: {
+        storeId: user.storeId
+      },
+      model: Products,
+      attributes: ['id', 'name', 'stock', 'price'],
+      include: {
+        model: ProductImage,
+        attributes: ['image'],
+        limit: 1
+      },
+      limit: limit,
+      offset: offset
+
     })
-    if (!store) {
+    const url = dinamisUrl(req.query)
+    const pInfo = pageInfo(count, limit, page, url, 'stores/my-store')
+    const product = rows
+    if (!product) {
       return responseHandler(res, 404, 'Data not found')
     }
-    return responseHandler(res, 200, 'List Store with user', store)
+    return responseHandler(res, 200, 'List Product', product, null, pInfo)
   } catch (err) {
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
     if (error) {
