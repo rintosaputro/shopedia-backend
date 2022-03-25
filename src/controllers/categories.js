@@ -6,7 +6,7 @@ const Category = require('../models/categories')
 exports.listCategories = async (req, res) => {
   try {
     const categories = await Category.findAll()
-    responseHandler(res, 200, categories)
+    responseHandler(res, 200, 'List categories', categories)
   } catch (error) {
     console.error(error)
     return responseHandler(res, 500, 'Error while listing categories')

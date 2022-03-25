@@ -54,11 +54,16 @@ exports.getAllProducts = async (req, res) => {
     }
   } catch (err) {
     console.log(err)
-    const error = err.errors.map(err => ({ field: err.path, message: err.message }))
-    if (error) {
-      return responseHandler(res, 500, 'Unexpected error', null, error)
+
+    if (err.errors) {
+      const error = err.errors.map(err => ({ field: err.path, message: err.message }))
+      if (error) {
+        return responseHandler(res, 500, 'Unexpected error', null, error)
+      } else {
+        return responseHandler(res, 500, 'Unexpected error')
+      }
     } else {
-      return responseHandler(res, 500, 'Unexpected error')
+      return responseHandler(res, 500, 'Unexpected error while fetching data')
     }
   }
 }
