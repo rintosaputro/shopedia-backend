@@ -83,9 +83,14 @@ exports.createProduct = async (req, res) => {
     const results = await Products.create(req.body)
     return responseHandler(res, 200, 'Product Created!', results)
   } catch (err) {
-    const error = err.errors.map(err => ({ field: err.path, message: err.message }))
-    if (error) {
-      return responseHandler(res, 500, 'Unexpected error', null, error)
+    console.error(err)
+    if (err.errors) {
+      const error = err.errors.map(err => ({ field: err.path, message: err.message }))
+      if (error) {
+        return responseHandler(res, 500, 'Unexpected error', null, error)
+      } else {
+        return responseHandler(res, 500, 'Unexpected error')
+      }
     } else {
       return responseHandler(res, 500, 'Unexpected error')
     }

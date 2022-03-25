@@ -41,7 +41,16 @@ const Products = sequelize.define('products', {
     }
   },
   condition: {
-    type: Sequelize.ENUM(['New', 'Second'])
+    type: Sequelize.ENUM(['New', 'Second']),
+    validate: {
+      notEmpty: {
+        msg: 'Condition can not be empty'
+      },
+      isIn: {
+        args: [['New', 'Second']],
+        msg: 'Condition must be New or Second'
+      }
+    }
   },
   brandId: {
     type: Sequelize.INTEGER,
