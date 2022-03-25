@@ -25,7 +25,7 @@ exports.createImage = async (req, res) => {
     if (req.file) {
       deleteFile(req.file.filename)
     }
-    const error = err.errors.map(err => ({ field: err.path, message: err.message }))
+    const error = err
     if (error) {
       return responseHandler(res, 500, 'Unexpected error', null, error)
     } else {
@@ -45,7 +45,7 @@ exports.deleteImage = async (req, res) => {
     await pImage.destroy()
     return responseHandler(res, 200, 'Image deleted successfully', pImage)
   } catch (err) {
-    const error = err.errors.map(err => ({ field: err.path, message: err.message }))
+    const error = err
     if (error) {
       return responseHandler(res, 500, 'Unexpected error', null, error)
     } else {
@@ -74,7 +74,7 @@ exports.updateImage = async (req, res) => {
     if (req.file) {
       deleteFile(req.file.filename)
     }
-    const error = err.errors.map(err => ({ field: err.path, message: err.message }))
+    const error = err
     if (error) {
       return responseHandler(res, 500, 'Unexpected error', null, error)
     } else {
