@@ -43,8 +43,10 @@ exports.updateProfile = async (req, res) => {
 
     if (req.file) {
       path = req.file.path
-      const filename = cloudPathToFileName(user.image)
-      deleteFile(filename)
+      if (user.image) {
+        const filename = cloudPathToFileName(user.image)
+        deleteFile(filename)
+      }
     }
 
     const data = {
