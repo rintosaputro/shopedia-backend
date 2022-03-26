@@ -5,7 +5,9 @@ const Users = require('../models/users')
 
 exports.createReview = async (req, res) => {
   try {
-    const user = await Users.findByPk(req.body.userId)
+    const user = await Users.findByPk(req.user.id, {
+      attributes: ['id', 'image']
+    })
     if (!user) {
       return responseHandler(res, 404, 'User not found')
     }
@@ -13,6 +15,7 @@ exports.createReview = async (req, res) => {
     if (!product) {
       return responseHandler(res, 404, 'Product not found')
     }
+    req.body.userId = user.id
     const pReview = await ProductReview.create(req.body)
     return responseHandler(res, 200, 'Review Created', pReview)
   } catch (err) {
@@ -61,5 +64,43 @@ exports.updateReview = async (req, res) => {
     } else {
       return responseHandler(res, 500, 'Unexpected error')
     }
+  }
+}
+
+exports.getReview = async (req, res) => {
+  try {
+    const include = [
+      {
+        model: Users,
+        attributes: ['image']
+      },
+      {
+        model: ProductReview,
+        as: 'replies',
+        include: [{
+          model: Users,
+          attributes: ['image']
+        }],
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'parentId']
+        }
+      }
+    ]
+    const review = await ProductReview.findAll({
+      include: include,
+      where: {
+        id: req.params.id
+      },
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }
+    })
+    if (!review) {
+      return responseHandler(res, 404, 'Product not found')
+    }
+    return responseHandler(res, 200, 'review product', review)
+  } catch (err) {
+    console.log(err)
+    return responseHandler(res, 'Unexpected error')
   }
 }
