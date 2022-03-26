@@ -99,6 +99,30 @@ const OrderedProducts = sequelize.define('orderedProducts', {
         msg: 'userId can not be null'
       }
     }
+  },
+  storeId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: 'storeId can not be empty'
+      },
+      isInt: {
+        msg: 'storeId must be an integer'
+      },
+      notNull: {
+        msg: 'storeId can not be null'
+      }
+    }
+  },
+  deletedAt: {
+    type: Sequelize.DATE,
+    allowNull: true,
+    validate: {
+      isDate: {
+        msg: 'deletedAt must be a date'
+      }
+    }
   }
 })
 
@@ -113,6 +137,10 @@ OrderedProducts.belongsTo(require('./orderStatus'), {
 })
 OrderedProducts.belongsTo(require('./users'), {
   foreignKey: 'userId'
+})
+
+OrderedProducts.belongsTo(require('./stores'), {
+  foreignKey: 'storeId'
 })
 
 module.exports = OrderedProducts
