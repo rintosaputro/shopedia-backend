@@ -89,7 +89,8 @@ exports.getReview = async (req, res) => {
     const review = await ProductReview.findAll({
       include: include,
       where: {
-        id: req.params.id
+        productId: req.params.id,
+        parentId: null
       },
       attributes: {
         exclude: ['createdAt', 'updatedAt']
