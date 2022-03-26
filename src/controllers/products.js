@@ -12,7 +12,7 @@ const Stores = require('../models/stores')
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const { search = '', sort = 'ASC', orderBy = 'id', minPrice = 0, maxPrice = 1000000000, brandId = '', categoryId = '', condition = '' } = req.query
+    const { search = '', store = '', sort = 'ASC', orderBy = 'id', minPrice = 0, maxPrice = 1000000000, brandId = '', categoryId = '', condition = '' } = req.query
     let { page, limit } = req.query
     if (parseInt(minPrice) > parseInt(maxPrice)) {
       return responseHandler(res, 400, 'Bad request. Max price must be greater than min')
@@ -28,7 +28,12 @@ exports.getAllProducts = async (req, res) => {
       },
       {
         model: Stores,
-        attributes: ['name']
+        attributes: ['name'],
+        where: {
+          name: {
+            [Sequelize.Op.like]: `%${store}%`
+          }
+        }
       }
     ]
     const { count, rows } = await Products.findAndCountAll({
