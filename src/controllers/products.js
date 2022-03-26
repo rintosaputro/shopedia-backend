@@ -181,25 +181,6 @@ exports.getProductsWithImages = async (req, res) => {
   }
 }
 
-exports.getProductWithReview = async (req, res) => {
-  try {
-    const product = await Products.findAll({
-      include: ProductReview
-    })
-    if (!product) {
-      return responseHandler(res, 404, 'Data not found')
-    }
-    return responseHandler(res, 200, 'product with review', product)
-  } catch (err) {
-    const error = err.errors.map(err => ({ field: err.path, message: err.message }))
-    if (error) {
-      return responseHandler(res, 500, 'Unexpected error', null, error)
-    } else {
-      return responseHandler(res, 500, 'Unexpected error')
-    }
-  }
-}
-
 exports.getProductDetail = async (req, res) => {
   try {
     const include = [
