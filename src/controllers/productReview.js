@@ -82,7 +82,7 @@ exports.getReview = async (req, res) => {
           attributes: ['image']
         }],
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'parentId']
+          exclude: ['updatedAt', 'parentId']
         }
       }
     ]
@@ -93,7 +93,7 @@ exports.getReview = async (req, res) => {
         parentId: null
       },
       attributes: {
-        exclude: ['createdAt', 'updatedAt']
+        exclude: ['updatedAt']
       }
     })
     if (!review) {
