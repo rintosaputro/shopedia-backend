@@ -119,9 +119,14 @@ exports.addOrderedProduct = async (req, res) => {
     }
 
     const product = await Products.findByPk(productId)
+    const user = await Users.findByPk(userId)
 
     if (!product) {
       return responseHandler(res, 400, 'Product not found')
+    }
+
+    if (user.storeId === product.storeId) {
+      return responseHandler(res, 400, 'You can not order your own product')
     }
 
     data.storeId = product.storeId
