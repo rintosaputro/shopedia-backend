@@ -1,13 +1,13 @@
 const { responseHandler } = require('../helpers/responseHandler')
 const Products = require('../models/products')
 const ProductImage = require('../models/productImage')
-const ProductReview = require('../models/productReview')
 const Sequelize = require('sequelize')
 const { pageInfo } = require('../helpers/pageInfo')
 const { dinamisUrl } = require('../helpers/dinamisUrl')
 const Brands = require('../models/brands')
 const Categories = require('../models/categories')
 const Users = require('../models/users')
+const Rates = require('../models/rates')
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -189,12 +189,14 @@ exports.getProductDetail = async (req, res) => {
         attributes: ['image']
       },
       {
-        model: ProductReview,
-        attributes: ['id', 'comment']
-      },
-      {
         model: Categories,
         attributes: ['name']
+      },
+      {
+        model: Rates,
+        attributes: [
+          [Sequelize.fn('AVG', Sequelize.col('rate')), 'rate']
+        ]
       }
     ]
     const product = await Products.findByPk(req.params.id, {
