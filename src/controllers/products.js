@@ -8,6 +8,7 @@ const Brands = require('../models/brands')
 const Categories = require('../models/categories')
 const Users = require('../models/users')
 const Rates = require('../models/rates')
+const Stores = require('../models/stores')
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -24,6 +25,10 @@ exports.getAllProducts = async (req, res) => {
         model: ProductImage,
         attributes: ['image'],
         limit: 1
+      },
+      {
+        model: Stores,
+        attributes: ['name']
       }
     ]
     const { count, rows } = await Products.findAndCountAll({
@@ -186,7 +191,8 @@ exports.getProductDetail = async (req, res) => {
     const include = [
       {
         model: ProductImage,
-        attributes: ['image']
+        attributes: ['image'],
+        limit: 6
       },
       {
         model: Categories,
