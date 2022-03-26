@@ -105,9 +105,9 @@ const OrderedProducts = sequelize.define('orderedProducts', {
 OrderedProducts.belongsTo(require('./products'), {
   foreignKey: 'productId'
 })
-OrderedProducts.belongsTo(require('./transactions'), {
-  foreignKey: 'transactionId'
-})
+// OrderedProducts.belongsTo(require('./transactions'), {
+//   foreignKey: 'transactionId'
+// })
 OrderedProducts.belongsTo(require('./orderStatus'), {
   foreignKey: 'orderStatusId'
 })

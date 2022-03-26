@@ -113,5 +113,9 @@ Transactions.belongsTo(require('./paymentMethods'), {
 Transactions.belongsTo(require('./shippingMethods'), {
   foreignKey: 'shippingMethodId'
 })
+Transactions.hasMany(require('./orderedProduct'), {
+  // as: 'orderedProducts',
+  foreignKey: 'transactionId'
+})
 
 module.exports = Transactions
