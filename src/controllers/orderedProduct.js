@@ -147,7 +147,7 @@ exports.addOrderedProduct = async (req, res) => {
       orderedProduct = await OrderedProducts.create(data)
     }
 
-    transaction.total = Number(transaction.total) + Number(orderedProduct.total)
+    transaction.total = Number(transaction.total) + Number(data.total)
     product.stock = Number(product.stock) - Number(qty)
     console.log('naga', product.stock)
     await transaction.save()
