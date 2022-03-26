@@ -109,21 +109,41 @@ exports.getStoreWithUser = async (req, res) => {
     const user = await Users.findByPk(req.user.id, {
       attributes: ['id', 'storeId']
     })
+    const { search = '', sort = 'ASC', orderBy = 'id', minPrice = 0, maxPrice = 1000000000, brandId = '', categoryId = '', condition = '' } = req.query
     let { page, limit } = req.query
     page = parseInt(page) || 1
     limit = parseInt(limit) || 3
     const offset = (page - 1) * limit
     const { count, rows } = await Products.findAndCountAll({
       where: {
-        storeId: user.storeId
+        storeId: user.storeId,
+        name: {
+          [Sequelize.Op.like]: `%${search}%`
+        },
+        price: {
+          [Sequelize.Op.gt]: minPrice,
+          [Sequelize.Op.lt]: maxPrice
+        },
+        brandId: {
+          [Sequelize.Op.like]: `${brandId}%`
+        },
+        categoryId: {
+          [Sequelize.Op.like]: `${categoryId}%`
+        },
+        condition: {
+          [Sequelize.Op.like]: `${condition}%`
+        }
       },
       model: Products,
-      attributes: ['id', 'name', 'stock', 'price'],
+      attributes: ['id', 'name', 'stock', 'price', 'createdAt'],
       include: {
         model: ProductImage,
         attributes: ['image'],
         limit: 1
       },
+      order: [
+        [orderBy, sort]
+      ],
       limit: limit,
       offset: offset
 
@@ -131,7 +151,7 @@ exports.getStoreWithUser = async (req, res) => {
     const url = dinamisUrl(req.query)
     const pInfo = pageInfo(count, limit, page, url, 'stores/my-store')
     const product = rows
-    if (!product) {
+    if (product.length === 0) {
       return responseHandler(res, 404, 'Data not found')
     }
     return responseHandler(res, 200, 'List Product', product, null, pInfo)
