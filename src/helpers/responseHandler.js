@@ -11,14 +11,14 @@ exports.responseHandler = (res, status = 200, message = null, data = null, error
   if (message) {
     jsonRes.message = message
   }
+  if (pageInfo) {
+    jsonRes.pageInfo = pageInfo
+  }
   if (data) {
     jsonRes.results = data
   }
   if (error) {
     jsonRes.error = error
-  }
-  if (pageInfo) {
-    jsonRes.pageInfo = pageInfo
   }
   return res.status(status).json(jsonRes)
 }
