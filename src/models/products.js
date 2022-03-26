@@ -80,7 +80,6 @@ const Products = sequelize.define('products', {
 })
 
 Products.hasMany(Rates)
-Stores.hasMany(Products)
 Products.hasMany(ProductImage)
 Products.hasMany(ProductReview)
 Products.belongsTo(Brands, {
@@ -88,6 +87,9 @@ Products.belongsTo(Brands, {
 })
 Products.belongsTo(Categories, {
   foreignKey: 'categoryId'
+})
+Products.belongsTo(Stores, {
+  foreignKey: 'storeId'
 })
 
 module.exports = Products
