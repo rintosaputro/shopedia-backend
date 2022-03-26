@@ -11,5 +11,6 @@ routes.use('/brands', require('./brands'))
 routes.use('/payment-methods', require('./paymentMethod'))
 routes.use('/shipping-methods', require('./shippingMethod'))
 routes.use('/transactions', require('./transaction'))
+routes.use('/rates', require('./rates'))
 
 module.exports = routes

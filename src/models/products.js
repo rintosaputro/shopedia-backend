@@ -5,6 +5,7 @@ const ProductReview = require('./productReview')
 const Brands = require('./brands')
 const Categories = require('./categories')
 const Stores = require('./stores')
+const Rates = require('./rates')
 
 const Products = sequelize.define('products', {
   name: {
@@ -78,6 +79,7 @@ const Products = sequelize.define('products', {
   }
 })
 
+Products.hasMany(Rates)
 Stores.hasMany(Products)
 Products.hasMany(ProductImage)
 Products.hasMany(ProductReview)
