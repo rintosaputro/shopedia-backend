@@ -10,6 +10,7 @@ const {
 } = require('../helpers/responseHandler')
 const Roles = require('../models/roles')
 const Users = require('../models/users')
+const Stores = require('../models/stores')
 
 exports.updateProfile = async (req, res) => {
   try {
@@ -98,10 +99,19 @@ exports.getProfile = async (req, res) => {
     } = req.user
 
     const user = await Users.findByPk(id, {
-      attributes: ['id', 'name', 'email', 'gender', 'username', 'confirmed', 'description', 'image', 'roleId', 'storeId'],
-      include: [{
-        model: Roles
-      }]
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt', 'roleId', 'storeId']
+      },
+      include: [
+        {
+          model: Roles,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Stores,
+          attributes: ['id', 'name', 'description']
+        }
+      ]
     })
 
     if (!user) {
