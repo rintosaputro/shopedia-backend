@@ -38,7 +38,7 @@ exports.getAllProducts = async (req, res) => {
     ]
     const { count, rows } = await Products.findAndCountAll({
       include: include,
-      attributes: ['id', 'name', 'price'],
+      attributes: ['id', 'name', 'price', 'stock'],
       where: {
         name: {
           [Sequelize.Op.like]: `%${search}%`
