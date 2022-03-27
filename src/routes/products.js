@@ -18,7 +18,7 @@ products.delete('/image/:id', auth.verifyUserConfirmed, auth.verifySeller, produ
 products.patch('/image/:id', auth.verifyUserConfirmed, auth.verifySeller, uploadImage('image'), productImageController.updateImage)
 
 // product review
-products.get('/review/:id', auth.verifyUserConfirmed, productReviewController.getReview)
+products.get('/review/:id', productReviewController.getReview)
 products.post('/review', auth.verifyUserConfirmed, productReviewController.createReview)
 products.delete('/review/:id', auth.verifyUserConfirmed, productReviewController.deleteReview)
 products.patch('/review/:id', auth.verifyUserConfirmed, productReviewController.updateReview)
