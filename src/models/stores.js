@@ -7,15 +7,27 @@ const Stores = sequelize.define('store', {
     unique: {
       msg: 'Name already exists!'
     },
+    allowNull: false,
     validate: {
       notEmpty: {
+        msg: 'Name store must be fill'
+      },
+      notNull: {
         msg: 'Name store must be fill'
       }
     }
   },
   description: {
     type: Sequelize.TEXT,
-    allowNull: true
+    allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: 'Description store must be fill'
+      },
+      notNull: {
+        msg: 'Description store must be fill'
+      }
+    }
   }
 })
 
