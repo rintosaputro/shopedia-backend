@@ -4,6 +4,7 @@ const { pageInfo } = require('../helpers/pageInfo')
 const { responseHandler } = require('../helpers/responseHandler')
 const ProductImage = require('../models/productImage')
 const Products = require('../models/products')
+const Rates = require('../models/rates')
 const Stores = require('../models/stores')
 const Users = require('../models/users')
 
@@ -136,11 +137,19 @@ exports.getStoreWithUser = async (req, res) => {
       },
       model: Products,
       attributes: ['id', 'name', 'stock', 'price', 'createdAt'],
-      include: {
-        model: ProductImage,
-        attributes: ['image'],
-        limit: 1
-      },
+      include: [
+        {
+          model: ProductImage,
+          attributes: ['image'],
+          limit: 1
+        },
+        {
+          model: Rates,
+          attributes: [
+            [Sequelize.fn('AVG', Sequelize.col('rate')), 'rate']
+          ]
+        }
+      ],
       order: [
         [orderBy, sort]
       ],
@@ -156,6 +165,10 @@ exports.getStoreWithUser = async (req, res) => {
     }
     return responseHandler(res, 200, 'List Product', product, null, pInfo)
   } catch (err) {
+    console.error(err)
+    if (!err.errors) {
+      return responseHandler(res, 500, 'Unexpected error')
+    }
     const error = err.errors.map(err => ({ field: err.path, message: err.message }))
     if (error) {
       return responseHandler(res, 500, 'Unexpected error', null, error)

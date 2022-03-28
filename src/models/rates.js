@@ -15,7 +15,12 @@ const Rates = sequelize.define('rates', {
     validate: {
       notEmpty: {
         msg: 'rate must be fill'
-      }
+      },
+      isNumeric: {
+        msg: 'rate must be a number'
+      },
+      min: 0,
+      max: 5
     }
   }
 })
