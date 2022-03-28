@@ -142,13 +142,13 @@ exports.getStoreWithUser = async (req, res) => {
           model: ProductImage,
           attributes: ['image'],
           limit: 1
-        },
-        {
-          model: Rates,
-          attributes: [
-            [Sequelize.fn('AVG', Sequelize.col('rate')), 'rate']
-          ]
         }
+        // {
+        //   model: Rates,
+        //   attributes: [
+        //     [Sequelize.fn('AVG', Sequelize.col('rate')), 'rate']
+        //   ]
+        // }
       ],
       order: [
         [orderBy, sort]
