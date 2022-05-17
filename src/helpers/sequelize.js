@@ -8,9 +8,31 @@ const {
   DB_DIALECT
 } = process.env
 
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
-  host: DB_HOST,
-  dialect: DB_DIALECT || 'mysql'
-})
+let sequelize
+
+console.log(DB_DIALECT)
+
+if (DB_DIALECT === 'postgres') {
+  sequelize = new Sequelize(
+    DB_NAME,
+    DB_USER,
+    DB_PASSWORD,
+    {
+      host: DB_HOST,
+      dialect: 'postgres',
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        }
+      }
+    }
+  )
+} else {
+  sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+    host: DB_HOST,
+    dialect: DB_DIALECT || 'mysql'
+  })
+}
 
 module.exports = sequelize
