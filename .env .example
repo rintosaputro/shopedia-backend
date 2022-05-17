@@ -10,6 +10,7 @@ DB_USER=root
 DB_PASSWORD=
 DB_NAME=db_shopedia
 DB_DIALECT=mysql
+DB_ENABLE_SSL=false
 
 # MAILER
 SMTP_HOST=

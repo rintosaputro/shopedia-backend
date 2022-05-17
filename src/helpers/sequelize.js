@@ -5,10 +5,18 @@ const {
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
-  DB_DIALECT
+  DB_DIALECT,
+  DB_ENABLE_SSL
 } = process.env
 
 let sequelize
+let sslEnable
+
+if (DB_ENABLE_SSL === 'true') {
+  sslEnable = true
+} else {
+  sslEnable = false
+}
 
 console.log(DB_DIALECT)
 
@@ -20,7 +28,7 @@ if (DB_DIALECT === 'postgres') {
     {
       host: DB_HOST,
       dialect: 'postgres',
-      dialectOptions: {
+      dialectOptions: sslEnable && {
         ssl: {
           require: true,
           rejectUnauthorized: false
